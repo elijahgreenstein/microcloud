@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#! /usr/bin/env python
 
 import os
 import shutil
@@ -15,7 +15,7 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 
-SPHINX_DIR = os.path.join(os.getcwd(), ".sphinx")
+DEV_DIR = os.path.join(os.getcwd(), "_dev")
 
 GITHUB_REPO = "canonical/documentation-style-guide"
 GITHUB_CLONE_URL = f"https://github.com/{GITHUB_REPO}.git"
@@ -38,9 +38,7 @@ def clone_repo_and_copy_paths(file_source_dest, overwrite=False):
         overwrite: boolean flag to overwrite existing files in the destination
 
     Returns:
-        bool: Returns True only if all files were copied successfully.
-            Returns False if the input dictionary is empty, if the git clone fails,
-            or if any file fails to copy.
+        bool: True if all files were copied successfully, False otherwise
     """
 
     if not file_source_dest:
@@ -60,24 +58,29 @@ def clone_repo_and_copy_paths(file_source_dest, overwrite=False):
             check=True
         )
         logging.debug("Git clone output: %s", result.stdout)
-        
-        # Copy files from the cloned repository to the destination paths
-        is_copy_success = True
-        for source, dest in file_source_dest.items():
-            source_path = os.path.join(temp_dir, source)
-            
-            if not copy_files_to_path(source_path, dest, overwrite):
-                is_copy_success = False
-                logging.error("Failed to copy %s to %s", source_path, dest)
-        
-        return is_copy_success
     except subprocess.CalledProcessError as e:
         logging.error("Git clone failed: %s", e.stderr)
         return False
-    finally:
-        # Clean up temporary directory
-        logging.info("Cleaning up temporary directory: %s", temp_dir)
-        shutil.rmtree(temp_dir, ignore_errors=True)
+
+    # Copy files from the cloned repository to the destination paths
+    is_copy_success = True
+    for source, dest in file_source_dest.items():
+        source_path = os.path.join(temp_dir, source)
+
+        if not os.path.exists(source_path):
+            is_copy_success = False
+            logging.error("Source path not found: %s", source_path)
+            continue
+
+        if not copy_files_to_path(source_path, dest, overwrite):
+            is_copy_success = False
+            logging.error("Failed to copy %s to %s", source_path, dest)
+
+    # Clean up temporary directory
+    logging.info("Cleaning up temporary directory: %s", temp_dir)
+    shutil.rmtree(temp_dir)
+
+    return is_copy_success
 
 def copy_files_to_path(source_path, dest_path, overwrite=False):
     """
@@ -110,11 +113,6 @@ def copy_files_to_path(source_path, dest_path, overwrite=False):
                          dest_path)
             return True     # Skip copying
 
-    # Create parent directory if it doesn't exist
-    parent_dir = os.path.dirname(dest_path)
-    if parent_dir:
-        os.makedirs(parent_dir, exist_ok=True)
-
     # Copy the source to destination
     try:
         if os.path.isdir(source_path):
@@ -135,31 +133,14 @@ def parse_arguments():
 
 def main():
     # Define local directory paths
-    vale_files_dict = {file: os.path.join(SPHINX_DIR, file) for file in VALE_FILE_LIST}
+    vale_files_dict = {file: os.path.join(DEV_DIR, file) for file in VALE_FILE_LIST}
 
     # Parse command line arguments, default to overwrite_enabled = True
     overwrite_enabled = not parse_arguments().no_overwrite
 
-    # Clone repository to temporary directory and copy files to destination
+    # Download into /tmp through git clone
     if not clone_repo_and_copy_paths(vale_files_dict, overwrite=overwrite_enabled):
         logging.error("Failed to download files from repository")
-        return 1
-
-    # Replace the file type filter in vale.ini
-    vale_ini_path = os.path.join(SPHINX_DIR, "vale.ini")
-    try:
-        with open(vale_ini_path, 'r') as f:
-            content = f.read()
-        
-        # Replace the file type section
-        content = content.replace("[*.{md,txt,rst,html}]", "[*.{md}]")
-        
-        with open(vale_ini_path, 'w') as f:
-            f.write(content)
-        
-        logging.info("Updated vale.ini file type filter")
-    except (IOError, OSError) as e:
-        logging.error("Failed to update vale.ini: %s", e)
         return 1
 
     logging.info("Download complete")

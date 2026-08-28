@@ -1,81 +1,113 @@
 import datetime
 import os
+import textwrap
+
+# ------------------------------
+# MicroCloud customization
 import yaml
-
-############################
-# MicroCloud custom configuration #
-############################
-
 import sys
 from git import Repo
 import re
 from urllib.parse import urlparse
 
-sys.path.append('./')
-sys.path.append('.sphinx/')
+sys.path.append('_dev/')
 
 with open('../version/version.go') as f:
     match = re.search(r'RawVersion = "([^"]+)"', f.read())
     version = match.group(1) if match else ''
+# ------------------------------
 
+# Configuration for the Sphinx documentation builder.
+# All configuration specific to your project should be done in this file.
+#
+# If you're new to Sphinx and don't want any advanced or custom features,
+# just go through the items marked 'TODO'.
+#
+# A complete list of built-in Sphinx configuration values:
+# https://www.sphinx-doc.org/en/master/usage/configuration.html
+#
+# The Sphinx Stack uses the Canonical Sphinx theme to keep all documentation consistent
+# and on brand:
+# https://github.com/canonical/canonical-sphinx
 
 #######################
 # Project information #
 #######################
 
+# Project name
 project = 'MicroCloud'
+
+# Author name; used in the default copyright statement in the page footer
 author = 'Canonical Ltd.'
 
-# Sidebar documentation title; best kept reasonably short
+# The year in the copyright statement
+copyright = '2014-%s AGPL-3.0, %s' % (datetime.date.today().year, author)
+
+# Sidebar documentation title
 # To disable the title, set to an empty string.
 html_title = project + ' documentation ' + version
 
-# Copyright string; shown at the bottom of the page
-copyright = '2014-%s AGPL-3.0, %s' % (datetime.date.today().year, author)
-
 # Documentation website URL
-
 version_slug = f'{os.environ.get("READTHEDOCS_VERSION", "local")}'
-
 slug = 'microcloud/docs'
-
 html_baseurl = f'https://canonical.com/microcloud/docs/{version_slug}/'
 
 # OpenGraph metadata used for social sharing previews
 ogp_site_url = html_baseurl
+
+# Preview name of the documentation website
 ogp_site_name = html_title
+
+# Preview image URL
 ogp_image = f'https://canonical.com/microcloud/docs/{version_slug}/_static/microcloud_tag.png'
 
+# Product favicon; shown in bookmarks, browser tabs, etc.
 html_favicon = '_static/favicon.png'
 
+# Dictionary of values to pass into the Sphinx context for all pages:
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-html_context
 html_context = {
+    # Product page URL; can be different from product docs URL
     'product_page': 'canonical.com/microcloud',
+    # Product tag image; the orange part of your logo, shown in the page header
     'product_tag': '_static/microcloud_tag.png',
-
+    # Your Discourse instance URL
     'discourse': 'https://discourse.ubuntu.com/c/lxd/microcloud/',
     'discourse_prefix': {
         'ubuntu': 'https://discourse.ubuntu.com/t/',
         'lxc': 'https://discuss.linuxcontainers.org/t/',
     },
-
+    # Your Mattermost channel URL
     'mattermost': '',
+    # Your Matrix channel URL
     'matrix': '',
-
+    # Your documentation GitHub repository URL If set, links for viewing the
+    # documentation source files and creating GitHub issues are added at the bottom of
     'github_url': 'https://github.com/canonical/microcloud',
+    # Docs branch in the repo; used in links for viewing the source files
     'repo_default_branch': 'main',
+    # Docs location in the repo; used in links for viewing the source files
     'repo_folder': '/doc/',
-
-    # Required for feedback button
-    'github_issues': 'enabled',
-
     # Enables listing contributors on individual pages
     # This feature is deprecated and will be removed in the future
     'display_contributors': False,
-
+    # Required for feedback button
+    'github_issues': 'enabled',
+    # Passes the top-level 'author' value to the theme
+    "author": author,
+    # Documentation license information
+    "license": {
+        # TODO: Specify your project's license.
+        # For the name, we recommend using the standard shorthand identifier from
+        # https://spdx.org/licenses
+        "name": "",
+        # TODO: Link directly to your project's license statement.
+        "url": "",
+    },
+    # ------------------------------
+    # MicroCloud customization
     'sequential_nav': 'both',
-
-    # Prefix for top navigation menu URLs on 404 pages
-    'nav404_prefix': urlparse(html_baseurl).path,
+    # ------------------------------
 }
 
 html_extra_path = ['_extra']
@@ -128,6 +160,25 @@ rediraffe_redirects = 'redirects.txt'
 # Strips '/index.html' from destination URLs when building with 'dirhtml'
 rediraffe_dir_only = True
 
+############################
+# sphinx-llm configuration #
+############################
+
+# This description is included in llms.txt to provide some initial context for your
+# product docs.
+# TODO: Add a description in the form "This is the documentation for <product name>,
+# <first sentence of home page>".
+llms_txt_description = textwrap.dedent(
+    """\
+    This is the documentation for the Sphinx Stack, a template repository that helps you
+    set up, build, and publish Sphinx documentation.
+    """
+)
+
+# The base URL for references built by sphinx-markdown-builder.
+if os.environ.get("READTHEDOCS"):
+    markdown_http_base = html_baseurl
+
 ###########################
 # Link checker exceptions #
 ###########################
@@ -175,17 +226,33 @@ linkcheck_timeout = 45
 # Configuration extras #
 ########################
 
+# Custom MyST syntax extensions; see
+# https://myst-parser.readthedocs.io/en/latest/syntax/optional.html
+# NOTE: By default, the following MyST extensions are enabled:
+#   - substitution
+#   - deflist
+#   - linkify
+# myst_enable_extensions = set()
+
+# Custom Sphinx extensions; see
+# https://www.sphinx-doc.org/en/master/usage/extensions/index.html
 extensions = [
     'canonical_sphinx',
     'notfound.extension',
     'sphinx_design',
     'sphinx_rerediraffe',
+    "sphinx_reredirects",
     'sphinx_tabs.tabs',
     'sphinxcontrib.jquery',
     'sphinxext.opengraph',
+    "sphinx_config_options",
+    "sphinx_contributor_listing",
+    "sphinx_filtered_toctree",
+    "sphinx_llm.txt",
     'sphinx_related_links',
     'sphinx_roles',
     'sphinx_terminal',
+    "sphinx_ubuntu_images",
     'sphinx_youtube_links',
     'sphinxcontrib.cairosvgconverter',
     'sphinx_last_updated_by_git',
@@ -199,20 +266,18 @@ exclude_patterns = [
     '_build',
     'Thumbs.db',
     '.DS_Store',
-    '.sphinx',
     '.venv',
     'reference/release-notes/release-notes-template.md',
-    'integration',
+    '_dev',
     'README.md',
 ]
 
+# Adds custom CSS files, located remotely or in 'html_static_path'.
 html_css_files = [
     'https://assets.ubuntu.com/v1/d86746ef-cookie_banner.css',
 ]
 
-if os.environ.get('SINGLE_BUILD') != 'True':
-    html_css_files.append('override-header.css')
-
+# Adds custom JavaScript files, located remotely or in 'html_static_path'.
 html_js_files = [
     'https://assets.ubuntu.com/v1/287a5e8f-bundle.js',
     'js/rtd-versions-flyout.js',
@@ -220,12 +285,23 @@ html_js_files = [
 ]
 
 # Feedback button at the top; enabled by default
-# To disable the button, uncomment the line below:
-
+# TODO: Disable the button if your project is unsuitable for public feedback.
 # disable_feedback_button = True
 
-# Define a :center: role that can be used to center the content of table cells.
-rst_prolog = '''
+# Your manpage URL
+# TODO: To enable manpage links, uncomment and replace {codename} with required
+#       release, preferably an LTS release (e.g. noble). Do *not* substitute
+#       {section} or {page}; these will be replaced by sphinx at build time
+#
+# NOTE: If set, adding ':manpage:' to an .rst file
+#       adds a link to the corresponding man section at the bottom of the page.
+# manpages_url = 'https://manpages.ubuntu.com/manpages/{codename}/en/' + \
+#     'man{section}/{page}.{section}.html'
+
+# Specifies a reST snippet to be prepended to each .rst file
+# This defines a :center: role that centers table cell content.
+# This defines a :h2: role that styles content for use with PDF generation.
+rst_prolog = """
 .. role:: center
    :class: align-center
 .. role:: h2
@@ -234,80 +310,31 @@ rst_prolog = '''
     :class: woke-ignore
 .. role:: vale-ignore
     :class: vale-ignore
-'''
+"""
+
+# Configuration for Intersphinx projects
+
+intersphinx_mapping = {
+    'lxd': ('https://canonical.com/lxd/docs/latest/', None),
+    'microceph': ('https://canonical.com/ceph/docs/latest/', None),
+    'microovn': ('https://ubuntu.com/docs/microovn/latest/', None),
+    'ceph': ('https://docs.ceph.com/en/latest/', None),
+    'snap': ('https://snapcraft.io/docs/', None),
+}
+
+# ------------------------------
+# MicroCloud customization beneath this line
 
 # Load substitutions from YAML file
 if os.path.exists('./reuse/substitutions.yaml'):
     with open('./reuse/substitutions.yaml', 'r') as fd:
         myst_substitutions = yaml.safe_load(fd.read())
 
-############################################################
-### Styling
-############################################################
-
-# Find the current builder
-builder = 'dirhtml'
-if '-b' in sys.argv:
-    builder = sys.argv[sys.argv.index('-b')+1]
-
-# Setting templates_path for epub makes the build fail
-if builder == 'dirhtml' or builder == 'html':
-    templates_path = ['_templates']
-    if os.environ.get('SINGLE_BUILD') != 'True':
-        templates_path.insert(0, 'integration/microcloud/_templates')
-    notfound_template = '404.html'
-
-##########################################
-### Misc MicroCloud custom configuration #
-##########################################
-
 # Use custom 404 page text
 notfound_context = {
     'title': 'Page not found',
     'body': '<p><strong>Sorry, but the documentation page that you are looking for was not found.</strong></p>\n\n<p>Documentation changes over time, and pages are moved around. We try to redirect you to the updated content where possible, but unfortunately, that didn\'t work this time (maybe because the content you were looking for does not exist in this version of the documentation).</p>\n<p>You can try to use the navigation to locate the content you\'re looking for, or search for a similar page.</p>\n',
 }
-
-# Intersphinx setup differs for different builds to optimize use with integrated docs  
-if ('SINGLE_BUILD' in os.environ and os.environ['SINGLE_BUILD'] == 'True'):
-    intersphinx_mapping = {
-        'lxd': ('https://canonical.com/lxd/docs/latest/', None),
-        'microceph': ('https://canonical.com/ceph/docs/latest/', None),
-        'microovn': ('https://ubuntu.com/docs/microovn/latest/', None),
-    }
-elif ('READTHEDOCS' in os.environ) and (os.environ['READTHEDOCS'] == 'True'):
-    intersphinx_mapping = {
-        'lxd': (html_baseurl + 'lxd/', os.environ['READTHEDOCS_OUTPUT'] + 'html/lxd/objects.inv'),
-        'microceph': (html_baseurl + 'microceph/', os.environ['READTHEDOCS_OUTPUT'] + 'html/microceph/objects.inv'),
-        'microovn': (html_baseurl + 'microovn/', os.environ['READTHEDOCS_OUTPUT'] + 'html/microovn/objects.inv'),
-    }
-else:
-    intersphinx_mapping = {
-        'lxd': ('/lxd/', '_build/lxd/objects.inv'),
-        'microceph': ('/microceph/', '_build/microceph/objects.inv'),
-        'microovn': ('/microovn/', '_build/microovn/objects.inv'),
-    }
-
-# Add intersphinx mappings for docs sets not part of the MicroCloud integrated docs here:
-
-base_intersphinx = {
-    'ceph': ('https://docs.ceph.com/en/latest/', None),
-    'snap': ('https://snapcraft.io/docs/', None),
-}
-
-intersphinx_mapping.update(base_intersphinx)
-
-# Update html_context for integrated builds and add the "integrated" tag
-if os.environ.get('SINGLE_BUILD') != 'True':
-    exec(compile(source=open('.sphinx/_integration/add_config.py').read(), filename='.sphinx/_integration/add_config.py', mode='exec'))
-    # MicroCloud docs are at the URL root, so override the relative paths to sibling doc sets
-    html_context['lxd_path'] = 'lxd'
-    html_context['lxd_tag'] = 'lxd/_static/lxd_tag.png'
-    html_context['microceph_path'] = 'microceph'
-    html_context['microceph_tag'] = 'microceph/_static/tag.png'
-    html_context['microovn_path'] = 'microovn'
-    html_context['microovn_tag'] = 'microovn/_static/microovn.png'
-    html_static_path.append('integration/microcloud/_static')
-    tags.add('integrated')
 
 # SwaggerUI configuration
 if os.environ.get('READTHEDOCS'):
@@ -322,18 +349,17 @@ myst_url_schemes = {
 }
 
 # Download and link swagger-ui files
-if not os.path.isdir('.sphinx/deps/swagger-ui'):
-    Repo.clone_from('https://github.com/swagger-api/swagger-ui', '.sphinx/deps/swagger-ui', depth=1)
+if not os.path.isdir('_dev/deps/swagger-ui'):
+    Repo.clone_from('https://github.com/swagger-api/swagger-ui', '_dev/deps/swagger-ui', depth=1)
 
 os.makedirs('_static/swagger-ui/', exist_ok=True)
 
 if not os.path.islink('_static/swagger-ui/swagger-ui-bundle.js'):
-    os.symlink('../../.sphinx/deps/swagger-ui/dist/swagger-ui-bundle.js', '_static/swagger-ui/swagger-ui-bundle.js')
+    os.symlink('../../_dev/deps/swagger-ui/dist/swagger-ui-bundle.js', '_static/swagger-ui/swagger-ui-bundle.js')
 if not os.path.islink('_static/swagger-ui/swagger-ui-standalone-preset.js'):
-    os.symlink('../../.sphinx/deps/swagger-ui/dist/swagger-ui-standalone-preset.js', '_static/swagger-ui/swagger-ui-standalone-preset.js')
+    os.symlink('../../_dev/deps/swagger-ui/dist/swagger-ui-standalone-preset.js', '_static/swagger-ui/swagger-ui-standalone-preset.js')
 if not os.path.islink('_static/swagger-ui/swagger-ui.css'):
-    os.symlink('../../.sphinx/deps/swagger-ui/dist/swagger-ui.css', '_static/swagger-ui/swagger-ui.css')
-
+    os.symlink('../../_dev/deps/swagger-ui/dist/swagger-ui.css', '_static/swagger-ui/swagger-ui.css')
 
 # Version label shown in the RTD flyout next to "default", in parentheses.
 # Set the FLYOUT_DEFAULT_VERSION_LABEL environment variable in the RTD project dashboard.

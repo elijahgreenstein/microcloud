@@ -11,12 +11,19 @@
         "no-missing-space-atx": {
             "enabled": true
         },
+        "blanks-around-headings": {
+            "enabled": true
+        },
         "heading-start-left": {
             "enabled": true
         },
         "no-trailing-punctuation": {
             "enabled": true,
-            "punctuation": ".,;。،；"
+            "punctuation": ".,;。，；"
+        },
+        "blanks-around-fences": {
+            "enabled": true,
+            "list_items": false
         },
         "blanks-around-lists": {
             "enabled": true
