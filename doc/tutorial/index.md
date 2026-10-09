@@ -9,18 +9,20 @@ myst:
 (tutorial)=
 # Tutorials
 
-These tutorials provide you with an introduction to MicroCloud concepts and
-usage.
+This multi-part tutorial provides you with an introduction to MicroCloud concepts and usage.
 
-A production MicroCloud should use at least three physical machines as cluster
-members. However, you may only have a single physical machine available when
-first learning about MicroCloud. Our tutorials only require a single physical
-machine to complete, but keep in mind that these tutorials are intended for
-learning purposes only.
+```{toctree}
+:maxdepth: 1
+
+</tutorial/setup>
+</tutorial/start>
+</tutorial/instances>
+</tutorial/clusters>
+```
 
 ## Get started with MicroCloud
 
-- {ref}`Set up a multi-member MicroCloud with virtual machines <tutorial-multi>`
+Set up a multi-member MicroCloud with virtual machines
 
 In this tutorial, you will create multiple LXD virtual machines (VMs) on a
 single physical host machine and use those VMs as cluster members.
@@ -40,8 +42,7 @@ and the MicroCloud UI.
 
 ## Advanced tutorial
 
-- {ref}`Set up a single-member MicroCloud with a physical machine
-  <tutorial-single>`
+Set up a single-member MicroCloud with a physical machine
 
 In this tutorial, you will install and initialize MicroCloud on a single
 physical machine and access the MicroCloud UI.
@@ -64,10 +65,3 @@ multi-member setup.
    machines should be used as cluster members.
 ```
 
-```{toctree}
-:hidden:
-:maxdepth: 2
-
-Get started with MicroCloud </tutorial/multi-member>
-Advanced tutorial </tutorial/single-member>
-```
