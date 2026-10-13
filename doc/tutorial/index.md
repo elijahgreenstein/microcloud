@@ -7,16 +7,16 @@ myst:
 (get-started)=
 (tutorials)=
 (tutorial)=
-# Tutorials
+# Tutorial
 
 This multi-part tutorial provides you with an introduction to MicroCloud concepts and usage.
 
 ```{toctree}
 :maxdepth: 1
 
-</tutorial/setup>
-</tutorial/launch>
-</tutorial/instances>
-</tutorial/clusters>
+/tutorial/setup
+/tutorial/start
+/tutorial/ui
+/tutorial/instances
 ```
 
