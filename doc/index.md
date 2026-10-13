@@ -28,7 +28,7 @@ MicroCloud is designed for small-scale private clouds and hybrid cloud extension
 
 | | |
 |---|---|
-| Start here | {ref}`Tutorial using multiple virtualized cluster members <tutorial-multi>` • {ref}`Tutorial using a single physical cluster member <tutorial-single>` • {ref}`MicroCloud overview <exp-microcloud>` |
+| Start here | {ref}`Tutorial <get-started>` • {ref}`MicroCloud overview <exp-microcloud>` |
 | Storage and networks | {ref}`Understand local vs. distributed storage <exp-storage>` • {ref}`Understand MicroCloud's networking approach <exp-networking>` • {ref}`Configure an OVN underlay network <howto-ovn-underlay>` • {ref}`Configure a dedicated Ceph network <howto-ceph-networking>` • {ref}`Add a service <howto-add-service>` |
 | Cluster management | {ref}`Add <howto-member-add>`, {ref}`remove <howto-member-remove>`, and {ref}`shut down <howto-member-shutdown>` cluster members • {ref}`Access the web UI <howto-ui>` • {ref}`Common CLI commands reference <ref-commands>` |
 | Multiple clusters | {ref}`Cluster Manager how-to guide <howto-cluster-manager>`, {ref}`reference architecture <ref-cluster-manager-architecture>`, and {ref}`API reference <ref-cluster-manager-api>` |
