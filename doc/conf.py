@@ -41,7 +41,7 @@ component_docs_urls = {
 #######################
 
 # Project name
-project = 'MicroCloud'
+project = 'MicroCloud documentation'
 
 # Author name; used in the default copyright statement in the page footer
 author = 'Canonical Ltd.'
@@ -51,7 +51,7 @@ copyright = '2014-%s AGPL-3.0, %s' % (datetime.date.today().year, author)
 
 # Sidebar documentation title
 # To disable the title, set to an empty string.
-html_title = project + ' documentation ' + version
+html_title = project
 
 # Documentation website URL
 version_slug = f'{os.environ.get("READTHEDOCS_VERSION", "local")}'
@@ -118,10 +118,7 @@ html_context = {
 
 html_extra_path = ['_extra']
 
-# Enables the pencil icon to edit pages on GitHub, shown at the top of each page
-html_theme_options = {
-    'source_edit_link': html_context['github_url']
-}
+html_theme = "ulwazi"
 
 #######################
 # Sitemap configuration: https://sphinx-sitemap.readthedocs.io/
@@ -243,8 +240,7 @@ linkcheck_timeout = 45
 # Custom Sphinx extensions; see
 # https://www.sphinx-doc.org/en/master/usage/extensions/index.html
 extensions = [
-    'canonical_sphinx',
-    'notfound.extension',
+    'ulwazi',
     'sphinx_design',
     'sphinx_rerediraffe',
     "sphinx_reredirects",
@@ -354,6 +350,9 @@ unified_search_project_filter = True
 # Download each remote index only once per sphinx-autobuild session (with `make
 # run`) and reuse it for later rebuilds
 unified_search_cache_remote_indexes = True
+
+# Use with Ulwazi
+unified_search_theme = "ulwazi"
 
 # Load substitutions from YAML file
 if os.path.exists('./reuse/substitutions.yaml'):
