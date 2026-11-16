@@ -30,6 +30,12 @@ with open('../version/version.go') as f:
 # and on brand:
 # https://github.com/canonical/canonical-sphinx
 
+component_docs_urls = {
+    "lxd": "https://canonical.com/lxd/docs/latest/",
+    "microceph": "https://canonical.com/ceph/docs/latest/",
+    "microovn": "https://ubuntu.com/docs/microovn/latest/",
+}
+
 #######################
 # Project information #
 #######################
@@ -259,6 +265,8 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx_sitemap',
     'myst_parser',
+    # Customized (not in Sphinx Stack)
+    'sphinx_unified_search',
 ]
 
 # Excludes files or directories from processing
@@ -324,6 +332,28 @@ intersphinx_mapping = {
 
 # ------------------------------
 # MicroCloud customization beneath this line
+
+# Sphinx unified search
+# Search indexes are fetched from component docs; result links point to the
+# components in the integrated docs.
+unified_search_projects = [
+    {
+        "name": name,
+        "base_url": component_docs_urls[key],
+        "searchindex_url": component_docs_urls[key] + "searchindex.js",
+    }
+    for name, key in [
+        ("LXD", "lxd"),
+        ("MicroCeph", "microceph"),
+        ("MicroOVN", "microovn")
+    ]
+]
+
+unified_search_project_filter = True
+
+# Download each remote index only once per sphinx-autobuild session (with `make
+# run`) and reuse it for later rebuilds
+unified_search_cache_remote_indexes = True
 
 # Load substitutions from YAML file
 if os.path.exists('./reuse/substitutions.yaml'):
